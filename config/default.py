@@ -129,10 +129,22 @@ MAILGUN_MAX_RETRIES = 4
 MAILING_LISTS_TEST_MODE = False
 MAILING_LISTS_TIMESTAMP_TOLERANCE = 60
 
-NEWT_FEEDBACK_FORM_URL = 'https://forms.fake/xyz'
 NEWT_MINIMUM_CLASS_SIZE = 150
 NEWT_SHOW_OTHER_GENDER = True
 NEWT_SMALL_CELL_THRESHOLD = 10
+NEWT_INFORMATION_BLOCK = """
+<div class="pilot-notice">
+          NOTE: THIS IS AN IN-PROGRESS PILOT PROJECT
+        </div>
+        <p class="mb-5">
+          The Grade Distribution dashboard is an informational tool to assist instructors in assessing student
+          performance based on existing bCourses class grades and historical trends. Only you can view this information
+          developed specifically for your class. Please use the <a href="https://forms.gle/8MmpbRZYRomUULnaA"
+          target="_blank">feedback form</a> to ask questions, submit feedback, or suggest additional methods of
+          displaying grade reporting. To learn more about this tool, please visit the
+          <a href="https://rtl.berkeley.edu/bcourses-grade-distribution-tool" target="_blank">service page</a>.
+        </p>
+"""
 
 # Default is 15 minutes
 PHOTO_SIGNED_URL_EXPIRES_IN_SECONDS = 15 * 60

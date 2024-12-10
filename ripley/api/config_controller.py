@@ -49,7 +49,7 @@ def app_config():
     ]
     if current_user.is_authenticated:
         configs_for_feed = configs_for_feed + [
-            'NEWT_FEEDBACK_FORM_URL',
+            'NEWT_INFORMATION_BLOCK',
         ]
     api_json = {
         # App configurations set in local .py files.

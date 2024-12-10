@@ -29,15 +29,7 @@
         >
           <span :class="{'demo-mode-blur': isDemoMode}">{{ gradeDistribution.courseName }}</span> &mdash; {{ gradeDistribution.canvasSite.term.name }}
         </div>
-        <div class="pilot-notice">
-          NOTE: THIS IS AN IN-PROGRESS PILOT PROJECT
-        </div>
-        <p class="mb-5">
-          The Grade Distribution dashboard is an informational tool to assist instructors in assessing student performance
-          based on existing bCourses class grades and historical trends. Only you can view this information developed
-          specifically for your class. Please use the <OutboundLink id="newt-feedback-link" :href="config.newtFeedbackFormUrl" target="_blank">feedback form</OutboundLink>
-          to ask questions, submit feedback, or suggest additional methods of displaying grade reporting.
-        </p>
+        <div v-html="config.newtInformationBlock"></div>
         <v-card class="container mb-4" elevation="0">
           <DemographicsChart
             :chart-defaults="chartDefaults"
@@ -66,7 +58,6 @@
 import Context from '@/mixins/Context'
 import DemographicsChart from '@/components/bcourses/analytics/DemographicsChart'
 import Header1 from '@/components/utils/Header1'
-import OutboundLink from '@/components/utils/OutboundLink'
 import PriorEnrollmentChart from '@/components/bcourses/analytics/PriorEnrollmentChart'
 import {get, orderBy, size} from 'lodash'
 import {getGradeDistribution} from '@/api/grade-distribution'
@@ -76,7 +67,6 @@ export default {
   components: {
     DemographicsChart,
     Header1,
-    OutboundLink,
     PriorEnrollmentChart
   },
   mixins: [Context],
