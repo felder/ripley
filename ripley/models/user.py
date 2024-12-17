@@ -227,7 +227,7 @@ class User(UserMixin):
                     has_roles = len(canvas_site_user_roles)
                     allow_standalone_for_non_admins = app.config['ALLOW_STANDALONE_FOR_NON_ADMINS']
                     can_access_standalone_view = is_active and \
-                        bool(is_admin or ((has_roles or is_faculty) and allow_standalone_for_non_admins))
+                        bool(is_admin or ((has_roles or is_faculty or is_staff) and allow_standalone_for_non_admins))
         api_json = {
             **{
                 'canAccessStandaloneView': can_access_standalone_view,
