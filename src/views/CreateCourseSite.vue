@@ -235,7 +235,7 @@ export default {
   watch: {
     selectedTerm(slug) {
       if (slug) {
-        this.switchSemester(slug)
+        this.updateSemesterData(slug)
       }
     }
   },
@@ -413,6 +413,14 @@ export default {
       this.currentWorkflowStep = undefined
       this.coursesList = []
     },
+    setTermSlug(slug) {
+      if (this.selectedTerm === slug) {
+        this.updateSemesterData(this.selectedTerm)
+      } else {
+        // If the selectedTerm value is changing, updateSemesterData will be called by the 'watch' property set above
+        this.selectedTerm = slug
+      }
+    },
     showConfirmation() {
       this.updateSelected()
       this.alertScreenReader('Course site details form loaded.')
@@ -426,16 +434,6 @@ export default {
         this.selectedSectionsList = []
         this.updateSelected()
       }
-    },
-    switchSemester(slug) {
-      const teachingTerm = find(this.teachingTerms, t => t.slug === slug)
-      const term = teachingTerm || find(this.adminTerms, t => t.slug === slug)
-      this.coursesList = teachingTerm ? teachingTerm.classes : []
-      this.currentSemester = slug
-      this.currentSemesterName = term.name
-      this.selectedSectionsList = []
-      this.alertScreenReader(`Course sections for ${term.name} loaded`)
-      this.updateSelected()
     },
     trackBackgroundJob() {
       this.exportTimer = setInterval(() => {
@@ -479,14 +477,14 @@ export default {
     updateMetadata(data) {
       this.teachingTerms = data.teachingTerms
       if (size(this.teachingTerms) > 0) {
-        this.selectedTerm = this.teachingTerms[0].slug
+        this.setTermSlug(this.teachingTerms[0].slug)
       }
       this.fillCourseSites(this.teachingTerms)
       if (this.isAdmin) {
         this.adminActingAs = data.adminActingAs
         this.adminTerms = data.adminTerms
         if (size(this.teachingTerms) > 0 && this.adminTerms.length) {
-          this.selectedTerm = this.teachingTerms[0].slug
+          this.setTermSlug(this.teachingTerms[0].slug)
         }
         if (size(this.adminTerms) > 0 && !this.currentAdminTerm) {
           this.switchAdminTerm(this.adminTerms[0])
@@ -505,6 +503,16 @@ export default {
           }
         })
       })
+    },
+    updateSemesterData(slug) {
+      const teachingTerm = find(this.teachingTerms, t => t.slug === slug)
+      const term = teachingTerm || find(this.adminTerms, t => t.slug === slug)
+      this.coursesList = teachingTerm ? teachingTerm.classes : []
+      this.currentSemester = slug
+      this.currentSemesterName = term.name
+      this.selectedSectionsList = []
+      this.alertScreenReader(`Course sections for ${term.name} loaded`)
+      this.updateSelected()
     }
   }
 }

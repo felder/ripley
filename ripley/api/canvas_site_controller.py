@@ -298,14 +298,15 @@ def _get_admin_terms():
 def _get_teaching_terms(admin_acting_as, admin_by_ccns, admin_term_slug):
     is_admin = current_user.is_admin or current_user.is_canvas_admin
     if is_admin and admin_by_ccns and admin_term_slug:
+        term_id = BerkeleyTerm.from_slug(admin_term_slug).to_sis_term_id()
         sections = data_loch.get_sections(
             section_ids=admin_by_ccns,
-            term_id=BerkeleyTerm.from_slug(admin_term_slug).to_sis_term_id(),
+            term_id=term_id,
         )
         teaching_terms = get_teaching_terms(
-            current_user=current_user,
             section_ids=admin_by_ccns,
             sections=sort_course_sections(sections),
+            term_id=term_id,
         )
     else:
         teaching_terms = get_teaching_terms(
