@@ -38,7 +38,7 @@ from ripley.merged.grade_distributions import get_grade_distribution_with_prior_
 
 
 @app.route('/api/grade_distribution/<canvas_site_id>')
-@canvas_role_required('TeacherEnrollment', 'TaEnrollment', 'Lead TA')
+@canvas_role_required('TeacherEnrollment', 'Lead TA')
 def get_grade_distribution(canvas_site_id):
     instructor_uid = None if current_user.is_admin else current_user.uid
     course, course_name, section_ids, term = _validate(canvas_site_id, instructor_uid)
@@ -84,7 +84,7 @@ def get_grade_distribution(canvas_site_id):
 
 
 @app.route('/api/grade_distribution/<canvas_site_id>/enrollment')
-@canvas_role_required('TeacherEnrollment', 'TaEnrollment', 'Lead TA')
+@canvas_role_required('TeacherEnrollment', 'Lead TA')
 def get_prior_enrollment_grade_distribution(canvas_site_id):
     instructor_uid = None if current_user.is_admin else current_user.uid
     course, course_name, section_ids, term = _validate(canvas_site_id, instructor_uid)
@@ -107,7 +107,7 @@ def get_prior_enrollment_grade_distribution(canvas_site_id):
 
 
 @app.route('/api/grade_distribution/search_courses')
-@canvas_role_required('TeacherEnrollment', 'TaEnrollment', 'Lead TA')
+@canvas_role_required('TeacherEnrollment', 'Lead TA')
 def search_courses():
     search_text = request.args.get('searchText')
     results = find_course_by_name(search_text)
@@ -132,6 +132,6 @@ def _validate(canvas_site_id, instructor_uid):
     section_ids = [s['id'] for s in sis_sections]
     term_id = term.to_sis_term_id()
 
-    if instructor_uid and not len(get_section_instructors(term_id, section_ids, instructor_uid=instructor_uid)):
+    if instructor_uid and not len(get_section_instructors(term_id, section_ids, instructor_uid=instructor_uid, roles=['PI', 'ICNT', 'APRX'])):
         raise UnauthorizedRequestError('Sorry, you are not authorized to use this tool.')
     return course, course_name, section_ids, term
