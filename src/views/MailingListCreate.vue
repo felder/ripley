@@ -27,7 +27,7 @@
       </div>
     </div>
     <v-card
-      v-if="!error && !currentUser.isStudent"
+      v-if="!error"
       id="mailing-list-details"
       class="ma-0 pa-4"
       elevation="2"
@@ -95,7 +95,7 @@
                 <div class="text-no-wrap text-subtitle-1">-{{ mailingListSuffix }}@{{ mailgunDomain }}</div>
               </v-col>
             </v-row>
-            <v-row v-if="currentUser.isTeaching || currentUser.isAdmin || currentUser.isCanvasAdmin" no-gutters>
+            <v-row no-gutters>
               <v-col>
                 <div class="d-flex float-right mt-8">
                   <div :class="{'mr-2': isAdminToolMode}">

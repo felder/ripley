@@ -133,10 +133,6 @@ class User(UserMixin):
     def is_staff(self):
         return self.user['isStaff']
 
-    @property
-    def is_teaching(self):
-        return self.user.get('isTeaching', False)
-
     def logout(self):
         if self.user and self.uid:
             cache_key = _get_cache_key(canvas_site_id=self.canvas_site_id, uid=self.uid)

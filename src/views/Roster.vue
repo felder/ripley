@@ -189,28 +189,23 @@ export default {
     }
   },
   created() {
-    if (this.currentUser.isTeaching || this.currentUser.isAdmin || this.currentUser.isCanvasAdmin) {
-      getRoster(this.currentUser.canvasSiteId).then(
-        data => {
-          this.roster = data
-          this.students = this.roster.students
-          each(this.students, s => s.idx = this.idx(`${s.firstName} ${s.lastName} ${s.studentId}`))
-          // If student count is low then tooltip is not necessary.
-          const threshold = 36
-          this.showPrintButtonTooltip = (this.students.length >= threshold) && this.disablePrintButton
-        },
-        error => this.error = error
-      ).finally(() => this.$ready())
-    } else {
-      this.error = 'You must be a teacher in this bCourses course to view official student rosters.'
-      this.$ready()
-    }
+    getRoster(this.currentUser.canvasSiteId).then(
+      data => {
+        this.roster = data
+        this.students = this.roster.students
+        each(this.students, s => s.idx = this.idx(`${s.firstName} ${s.lastName} ${s.studentId}`))
+        // If student count is low then tooltip is not necessary.
+        const threshold = 36
+        this.showPrintButtonTooltip = (this.students.length >= threshold) && this.disablePrintButton
+      },
+      error => this.error = error
+    ).finally(() => this.$ready())
   },
   methods: {
     downloadCsv() {
       this.isDownloading = true
       exportRoster(this.currentUser.canvasSiteId).then(() => {
-        this.alertScreenReader(`${this.roster.canvasSiteName} CSV downloaded`)
+        this.alertScreenReader(`${this.currentUser.canvasSiteName} CSV downloaded`)
         setTimeout(() => this.isDownloading = false, 1500)
       })
     },

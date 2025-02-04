@@ -315,15 +315,9 @@ export default {
     clearInterval(this.exportTimer)
   },
   created() {
-    if (this.currentUser.isTeaching || this.currentUser.isAdmin || this.currentUser.isCanvasAdmin) {
-      this.loadExportOptions().then(() => {
-        this.$ready()
-      })
-    } else {
-      this.appState = 'error'
-      this.error = 'You must be a teacher in this bCourses course to export to E-Grades CSV.'
+    this.loadExportOptions().then(() => {
       this.$ready()
-    }
+    })
   },
   methods: {
     downloadGrades() {
