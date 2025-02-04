@@ -76,7 +76,7 @@ class TestUserProfile:
             }, m)
             fake_auth.login(canvas_site_id=8876542, uid=student_uid)
             api_json = self._api_user_profile(client, uid=student_uid)
-            assert api_json['isTeaching'] is False
+            assert api_json['isAuthenticated'] is True
 
     def test_authorized_student(self, app, client, fake_auth):
         """Identifies student role in context of Canvas site."""
@@ -90,14 +90,12 @@ class TestUserProfile:
             }, m)
             fake_auth.login(canvas_site_id=canvas_site_id, uid=uid)
             api_json = self._api_user_profile(client, uid=uid)
-            assert api_json['isStudent'] is True
+            assert api_json['isAuthenticated'] is True
 
     def test_authorized_admin(self, client, fake_auth):
         fake_auth.login(canvas_site_id=None, uid=admin_uid)
         api_json = self._api_user_profile(client, uid=student_uid)
         assert api_json['uid'] == student_uid
-        assert 'isStudent' not in api_json
-        assert 'isTeaching' not in api_json
 
     def test_masquerading_cookies(self, app, client, fake_auth):
         """Masquerading user gets profile of masqueradee."""
@@ -116,8 +114,6 @@ class TestUserProfile:
             response = client.get('/api/user/my_profile')
             api_json = response.json
             assert api_json['uid'] == teacher_uid
-            assert api_json['isStudent'] is False
-            assert api_json['isTeaching'] is True
             # Cookies!
             cookies = response.headers.getlist('Set-Cookie')
             user_sessions = [c for c in cookies if 'remember_ripley_token' in c]
@@ -137,8 +133,6 @@ class TestUserProfile:
             response = client.get('/api/user/my_profile')
             api_json = response.json
             assert api_json['uid'] == student_uid
-            assert api_json['isStudent'] is True
-            assert api_json['isTeaching'] is False
             # More cookies!
             cookies = response.headers.getlist('Set-Cookie')
             user_sessions = [c for c in cookies if 'remember_ripley_token' in c]

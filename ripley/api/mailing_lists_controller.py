@@ -27,7 +27,7 @@ from datetime import datetime
 
 from flask import current_app as app, request
 from flask_login import current_user
-from ripley.api.errors import BadRequestError, ResourceNotFoundError, UnauthorizedRequestError
+from ripley.api.errors import BadRequestError, ResourceNotFoundError
 from ripley.api.util import canvas_role_required, csv_download_response
 from ripley.externals import canvas
 from ripley.lib.http import tolerant_jsonify
@@ -44,8 +44,6 @@ def my_mailing_list():
 @app.route('/api/mailing_list/<canvas_site_id>')
 @canvas_role_required('TeacherEnrollment', 'TaEnrollment', 'Lead TA', 'Reader', 'CanvasAdmin')
 def get_mailing_list(canvas_site_id):
-    if current_user.is_teaching and str(current_user.canvas_site_id) != canvas_site_id:
-        raise UnauthorizedRequestError(f'You are not authorized to use Canvas site {canvas_site_id} in this context')
     return _mailing_list(canvas_site_id)
 
 

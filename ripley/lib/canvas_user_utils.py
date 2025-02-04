@@ -153,24 +153,16 @@ def canvas_user_profile_to_api_json(canvas_user_profile, uid, canvas_site_id=Non
         course = canvas.get_course(course_id=canvas_site_id)
         if course:
             api_json.update({
+                # TODO This site-specific data should not be merged into the upstream Canvas user object, but
+                # a fix will require reworking our authentication code.
                 'canvasSiteId': canvas_site_id,
-                'canvasSiteCourseCode': course.course_code,
-                'canvasSiteEnrollmentTermId': course.enrollment_term_id,
                 'canvasSiteName': course.name,
-                'canvasSiteSisCourseId': course.sis_course_id,
                 'canvasSiteUserRoles': [],
             })
-            is_student = False
-            is_teaching = False
             canvas_site_user = canvas.get_course_user(canvas_site_id, canvas_user_id) if course else None
             if canvas_site_user and canvas_site_user.enrollments:
                 roles = list({e['role'] for e in canvas_site_user.enrollments})
                 api_json['canvasSiteUserRoles'] = roles
-                roles_that_teach = ['TeacherEnrollment', 'TaEnrollment', 'Lead TA', 'Reader']
-                is_teaching = bool(next((role for role in roles if role in roles_that_teach), None))
-                is_student = not is_teaching and 'StudentEnrollment' in roles
-            api_json['isStudent'] = is_student
-            api_json['isTeaching'] = is_teaching
         else:
             raise InternalServerError(f'Invalid canvas_site_id: {canvas_site_id}')
     return api_json
