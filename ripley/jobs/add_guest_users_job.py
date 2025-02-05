@@ -46,9 +46,10 @@ class AddGuestUsersJob(BaseJob):
         guests = calnet.client(app).guests_modified_since(last_sync)
 
         if not len(guests):
-            app.logger.info('No guest users to add, job complete.')
+            result = 'No guest users to add, job complete.'
+            app.logger.info(result)
             CanvasSynchronization.update(guests=this_sync)
-            return
+            return result
 
         canvas_import_file = tempfile.NamedTemporaryFile(suffix='.csv')
 
@@ -83,7 +84,9 @@ class AddGuestUsersJob(BaseJob):
         )
         CanvasSynchronization.update(guests=this_sync)
 
-        app.logger.info('Users added, job complete.')
+        result = f'{len(guests)} users added, job complete.'
+        app.logger.info(result)
+        return result
 
     @classmethod
     def description(cls):

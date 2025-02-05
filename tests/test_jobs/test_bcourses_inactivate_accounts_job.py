@@ -34,13 +34,13 @@ class TestBcoursesInactivateAccountsJob:
 
     def test_no_changes(self, app):
         with setup_bcourses_refresh_job(app) as (s3, m):
-            BcoursesInactivateAccountsJob(app)._run()
+            assert BcoursesInactivateAccountsJob(app)._run() is None
             assert_s3_key_not_found(app, s3, 'sis-ids')
             assert_s3_key_not_found(app, s3, 'user-provision')
 
     def test_no_enrollments_in_inactivate_job(self, app):
         with setup_bcourses_refresh_job(app) as (s3, m):
-            BcoursesInactivateAccountsJob(app)._run()
+            assert BcoursesInactivateAccountsJob(app)._run() is None
             assert_s3_key_not_found(app, s3, 'enrollments-TERM-2023-B')
 
     @mock.patch('ripley.lib.calnet_utils.get_calnet_attributes_for_uids')
@@ -52,7 +52,8 @@ class TestBcoursesInactivateAccountsJob:
             mock_loch_users.return_value = loch_campus_users
             mock_calnet_users.return_value = []
 
-            BcoursesInactivateAccountsJob(app)._run()
+            result = BcoursesInactivateAccountsJob(app)._run()
+            assert 'SIS import result' in result
 
             sis_id_changes_imported = read_s3_csv(app, s3, 'sis-ids')
             assert len(sis_id_changes_imported) == 2

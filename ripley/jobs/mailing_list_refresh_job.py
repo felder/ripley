@@ -45,12 +45,12 @@ class MailingListRefreshJob(BaseJob):
                     MailingList.populate(mailing_list)
                     updated.append(mailing_list)
                 except Exception as e:
-                    app.logger.error(f'Failed to refresh popuation of mailing list id {mailing_list.id}')
+                    app.logger.error(f'Failed to refresh population of mailing list id {mailing_list.id}')
                     app.logger.exception(e)
 
         app.logger.info(f'Updated membership for {len(updated)} mailing lists, job complete.')
         # Return list of canvas_site_ids for sake of unit test(s).
-        return [m.canvas_site_id for m in updated]
+        return f'Updated membership for {len(updated)} mailing lists.'
 
     @classmethod
     def description(cls):

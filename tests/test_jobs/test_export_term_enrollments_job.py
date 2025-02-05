@@ -52,7 +52,8 @@ class TestExportTermEnrollmentsJob:
             }, m)
 
             with mock_s3_bucket(app):
-                ExportTermEnrollmentsJob(app)._run(params={'sis_term_id': 'TERM:2023-B'})
+                result = ExportTermEnrollmentsJob(app)._run(params={'sis_term_id': 'TERM:2023-B'})
+                assert result == 'Enrollments exported: TERM:2023-B, 2 enrollments; TERM:2023-C, 2 enrollments; TERM:2023-D, 2 enrollments'
 
                 csvs = find_last_dated_csvs('canvas-provisioning-reports', ['enrollments-TERM-2023-B'])
                 provisioning_report = csvs['enrollments-TERM-2023-B']

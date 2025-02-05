@@ -38,7 +38,9 @@ class TestBcoursesRefreshFullJob:
 
     def test_no_previous_export(self, app):
         with setup_bcourses_refresh_job(app) as (s3, m):
-            BcoursesRefreshFullJob(app)._run()
+            result = BcoursesRefreshFullJob(app)._run()
+            assert 'SIS import result' in result
+            assert "'Enrollment': {'created': 344, 'restored': 19, 'deleted': 4415}" in result
             spring_2023_enrollments_imported = read_s3_csv(app, s3, 'enrollments-TERM-2023-B-refresh-full')
             assert len(spring_2023_enrollments_imported) == 5
             assert spring_2023_enrollments_imported[0] == 'course_id,user_id,role,section_id,status,associated_user_id'
@@ -49,7 +51,7 @@ class TestBcoursesRefreshFullJob:
 
     def test_previous_export_no_change(self, app):
         with self.setup_term_enrollments_export(app) as s3:
-            BcoursesRefreshFullJob(app)._run()
+            assert BcoursesRefreshFullJob(app)._run() is None
             assert_s3_key_not_found(app, s3, 'enrollments-TERM-2023-B-refresh-full')
 
     @mock.patch('ripley.lib.canvas_site_provisioning.get_section_enrollments')
@@ -66,7 +68,8 @@ class TestBcoursesRefreshFullJob:
             })
             mock_section_enrollments.return_value = section_enrollments
 
-            BcoursesRefreshFullJob(app)._run()
+            result = BcoursesRefreshFullJob(app)._run()
+            assert 'SIS import result' in result
             spring_2023_enrollments_imported = read_s3_csv(app, s3, 'enrollments-TERM-2023-B-refresh-full')
             assert len(spring_2023_enrollments_imported) == 2
             assert spring_2023_enrollments_imported[1] == 'CRS:ANTHRO-189-2023-B,30060000,student,SEC:2023-B-32936,active,'
@@ -77,7 +80,8 @@ class TestBcoursesRefreshFullJob:
             section_enrollments.pop()
             mock_section_enrollments.return_value = section_enrollments
 
-            BcoursesRefreshFullJob(app)._run()
+            result = BcoursesRefreshFullJob(app)._run()
+            assert 'SIS import result' in result
             spring_2023_enrollments_imported = read_s3_csv(app, s3, 'enrollments-TERM-2023-B-refresh-full')
             assert len(spring_2023_enrollments_imported) == 2
             assert spring_2023_enrollments_imported[1] == 'CRS:ANTHRO-189-2023-B,30020000,student,SEC:2023-B-32936,deleted,'
@@ -96,7 +100,8 @@ class TestBcoursesRefreshFullJob:
             })
             mock_section_instructors.return_value = section_instructors
 
-            BcoursesRefreshFullJob(app)._run()
+            result = BcoursesRefreshFullJob(app)._run()
+            assert 'SIS import result' in result
             spring_2023_enrollments_imported = read_s3_csv(app, s3, 'enrollments-TERM-2023-B-refresh-full')
             assert len(spring_2023_enrollments_imported) == 3
             assert spring_2023_enrollments_imported[1] == 'CRS:ANTHRO-189-2023-B,30020000,Lead TA,SEC:2023-B-32936,active,'

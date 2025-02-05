@@ -122,6 +122,7 @@ CREATE TABLE job_history (
     id INTEGER NOT NULL,
     job_key VARCHAR(80) NOT NULL,
     failed BOOLEAN DEFAULT FALSE,
+    result TEXT,
     started_at TIMESTAMP WITH TIME ZONE NOT NULL,
     finished_at TIMESTAMP WITH TIME ZONE
 );

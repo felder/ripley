@@ -25,6 +25,7 @@ ENHANCEMENTS, OR MODIFICATIONS.
 
 import collections
 from contextlib import contextmanager
+from copy import deepcopy
 import csv
 from itertools import groupby
 from operator import itemgetter
@@ -118,13 +119,15 @@ class BcoursesRefreshBaseJob(BaseJob):
             for _csv in csv_set.all:
                 _csv.filehandle.close()
 
-            self.upload_results(csv_set, timestamp)
+            results = self.upload_results(csv_set, timestamp)
 
         app.logger.info('Job complete.')
 
         if self.job_flags.enrollments:
             CanvasSynchronization.update(enrollments=this_sync, instructors=this_sync)
         app.logger.info(f'bCourses refresh job (mode={self.__class__.__name__}) complete.')
+
+        return results
 
     def initialize_enrollment_provisioning_reports(self, sis_term_ids, users_by_uid):
         self.enrollment_provisioning_reports = {}
@@ -369,8 +372,8 @@ class BcoursesRefreshBaseJob(BaseJob):
     def upload_results(self, csv_set, timestamp):  # noqa C901
         # The email deletion job runs an API loop and does not post a SIS import to Canvas.
         if self.job_flags.delete_email_addresses:
-            self.handle_email_deletions(timestamp)
-            return
+            result = self.handle_email_deletions(timestamp)
+            return result
 
         z = zipfile.ZipFile(f'canvas-sis-import-{timestamp}.zip', 'w')
         data_to_upload = False
@@ -429,14 +432,32 @@ class BcoursesRefreshBaseJob(BaseJob):
         finally:
             z.close()
 
+        result = None
+
         try:
             if self.dry_run:
                 app.logger.info('Dry run mode, will not post SIS import files to Canvas.')
             elif data_to_upload:
-                if not canvas.post_sis_import(z.filename, extension='zip'):
-                    app.logger.warning('SIS import timed out or failed.')
+                sis_import = canvas.post_sis_import(z.filename, extension='zip')
+                if not sis_import:
+                    result = 'SIS import timed out or failed.'
+                    app.logger.warning(result)
+                else:
+                    import_stats = deepcopy(sis_import.data.get('statistics', {}))
+                    for key in list(import_stats):
+                        entity = import_stats[key]
+                        if isinstance(entity, dict):
+                            for k in list(entity):
+                                if entity[k] == 0:
+                                    del entity[k]
+                        if not entity:
+                            del import_stats[key]
+                    result = f'SIS import result: {str(import_stats)}'
+
         finally:
             os.remove(z.filename)
+
+        return result
 
     def handle_email_deletions(self, timestamp):
         app.logger.warning(f'About to delete email addresses for {len(self.email_deletions)} inactive users: {self.email_deletions}')
@@ -471,14 +492,19 @@ class BcoursesRefreshBaseJob(BaseJob):
                             'result': result,
                         })
 
+        result = None
         if not self.dry_run:
-            app.logger.info(f'Communication channel deletion results: {success_count} successes, {error_count} errors.')
+            result = f'Communication channel deletion results: {success_count} successes, {error_count} errors.'
+            app.logger.info(result)
+
         upload_dated_csv(
             folder='canvas-sis-imports',
             local_name=email_deletions_file.name,
             remote_name='email-deletions',
             timestamp=timestamp,
         )
+
+        return result
 
     def _csv_key(self):
         return self.key().replace('bcourses_', '').replace('_', '-')
