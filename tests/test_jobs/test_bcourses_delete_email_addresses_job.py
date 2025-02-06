@@ -34,13 +34,15 @@ class TestBcoursesDeleteEmailAddressesJob:
 
     def test_no_changes(self, app):
         with setup_bcourses_refresh_job(app) as (s3, m):
-            BcoursesDeleteEmailAddressesJob(app)._run()
+            result = BcoursesDeleteEmailAddressesJob(app)._run()
+            assert result == 'Communication channel deletion results: 0 successes, 0 errors.'
             assert_s3_key_not_found(app, s3, 'sis-ids')
             assert_s3_key_not_found(app, s3, 'user-provision')
 
     def test_no_enrollments_in_inactivate_job(self, app):
         with setup_bcourses_refresh_job(app) as (s3, m):
-            BcoursesDeleteEmailAddressesJob(app)._run()
+            result = BcoursesDeleteEmailAddressesJob(app)._run()
+            assert result == 'Communication channel deletion results: 0 successes, 0 errors.'
             assert_s3_key_not_found(app, s3, 'enrollments-TERM-2023-B')
 
     @mock.patch('ripley.lib.calnet_utils.get_calnet_attributes_for_uids')
@@ -52,7 +54,8 @@ class TestBcoursesDeleteEmailAddressesJob:
             mock_loch_users.return_value = loch_campus_users
             mock_calnet_users.return_value = []
 
-            BcoursesDeleteEmailAddressesJob(app)._run()
+            result = BcoursesDeleteEmailAddressesJob(app)._run()
+            assert result == 'Communication channel deletion results: 1 successes, 0 errors.'
 
             assert_s3_key_not_found(app, s3, 'sis-ids')
             assert_s3_key_not_found(app, s3, 'user-provision')

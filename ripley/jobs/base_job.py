@@ -78,7 +78,11 @@ class BaseJob:
                         hours_running = (utc_now() - running_job.started_at).total_seconds() / 3600
                         if hours_running >= app.config['JOB_TIMEOUT_HOURS']:
                             app.logger.warn(f'Older instance of job {self.key()} has timed out.')
-                            JobHistory.job_finished(id_=running_job.id, failed=True)
+                            JobHistory.job_finished(
+                                id_=running_job.id,
+                                failed=True,
+                                result=f"Job exceeded timeout of {app.config['JOB_TIMEOUT_HOURS']} hours.",
+                            )
                         elif not concurrent:
                             app.logger.warn(f'Skipping job {self.key()} because an older instance is still running')
                             return
@@ -90,13 +94,15 @@ class BaseJob:
                             params = {}
                         if app.config['FORCE_DRY_RUN']:
                             params['isDryRun'] = True
-                        self._run(params)
-                        JobHistory.job_finished(id_=job_tracker.id)
+                        result = self._run(params)
+                        JobHistory.job_finished(id_=job_tracker.id, result=result)
                         app.logger.info(f'Job {self.key()} finished successfully.')
 
                     except Exception as e:
-                        JobHistory.job_finished(id_=job_tracker.id, failed=True)
-                        summary = f'Job {self.key()} failed due to {str(e)}'
+                        error_string = str(e)
+                        JobHistory.job_finished(id_=job_tracker.id, failed=True, result=error_string)
+
+                        summary = f'Job {self.key()} failed due to {error_string}'
                         app.logger.error(summary)
                         app.logger.exception(e)
 

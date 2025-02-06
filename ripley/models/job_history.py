@@ -36,6 +36,7 @@ class JobHistory(db.Model):
     id = db.Column(db.Integer, nullable=False, primary_key=True)  # noqa: A003
     job_key = db.Column(db.String(80), nullable=False)
     failed = db.Column(db.Boolean, nullable=False, default=False)
+    result = db.Column(db.Text)
     started_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
     finished_at = db.Column(db.DateTime)
 
@@ -49,6 +50,7 @@ class JobHistory(db.Model):
                     id={self.id},
                     job_key={self.job_key},
                     failed={self.failed},
+                    result={self.result},
                     started_at={self.started_at},
                     finished_at={self.finished_at},
                 """
@@ -73,10 +75,11 @@ class JobHistory(db.Model):
         return row
 
     @classmethod
-    def job_finished(cls, id_, failed=False):
+    def job_finished(cls, id_, failed=False, result=None):
         row = cls.query.filter_by(id=id_).first()
         if row:
             row.failed = failed
+            row.result = result
             row.finished_at = datetime.now()
             db.session.add(row)
             std_commit()
@@ -100,7 +103,7 @@ class JobHistory(db.Model):
     def fail_orphans():
         sql = """
             UPDATE job_history
-            SET failed = TRUE, finished_at = now()
+            SET failed = TRUE, result = 'Failed orphan job.', finished_at = now()
             WHERE finished_at IS NULL"""
         db.session.execute(text(sql))
 
@@ -114,6 +117,7 @@ class JobHistory(db.Model):
             'id': self.id,
             'jobKey': self.job_key,
             'failed': self.failed,
+            'result': self.result,
             'startedAt': to_isoformat(self.started_at),
             'finishedAt': self.finished_at and to_isoformat(self.finished_at),
         }

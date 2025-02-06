@@ -34,7 +34,7 @@ class TestBcoursesRefreshAccountsJob:
 
     def test_no_changes(self, app):
         with setup_bcourses_refresh_job(app) as (s3, m):
-            BcoursesRefreshAccountsJob(app)._run()
+            assert BcoursesRefreshAccountsJob(app)._run() is None
             assert_s3_key_not_found(app, s3, 'sis-ids')
             assert_s3_key_not_found(app, s3, 'user-provision')
 
@@ -47,7 +47,8 @@ class TestBcoursesRefreshAccountsJob:
                     break
             mock_users.return_value = campus_users
 
-            BcoursesRefreshAccountsJob(app)._run()
+            result = BcoursesRefreshAccountsJob(app)._run()
+            assert 'SIS import result' in result
 
             assert_s3_key_not_found(app, s3, 'sis-ids')
 
@@ -65,7 +66,8 @@ class TestBcoursesRefreshAccountsJob:
                     break
             mock_users.return_value = campus_users
 
-            BcoursesRefreshAccountsJob(app)._run()
+            result = BcoursesRefreshAccountsJob(app)._run()
+            assert 'SIS import result' in result
 
             assert_s3_key_not_found(app, s3, 'sis-ids')
 
@@ -83,7 +85,8 @@ class TestBcoursesRefreshAccountsJob:
                     break
             mock_users.return_value = campus_users
 
-            BcoursesRefreshAccountsJob(app)._run()
+            result = BcoursesRefreshAccountsJob(app)._run()
+            assert 'SIS import result' in result
 
             sis_id_changes_imported = read_s3_csv(app, s3, 'sis-ids')
             assert len(sis_id_changes_imported) == 2
@@ -94,7 +97,7 @@ class TestBcoursesRefreshAccountsJob:
 
     def test_no_enrollments_in_accounts_job(self, app):
         with setup_bcourses_refresh_job(app) as (s3, m):
-            BcoursesRefreshAccountsJob(app)._run()
+            assert BcoursesRefreshAccountsJob(app)._run() is None
             assert_s3_key_not_found(app, s3, 'enrollments-TERM-2023-B')
 
     @pytest.fixture(scope='function')

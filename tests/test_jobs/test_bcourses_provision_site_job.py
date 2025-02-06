@@ -49,7 +49,7 @@ class TestBcoursesProvisionSiteJob:
             'sis_term_id': 'TERM:2023-B',
         }
         with setup_bcourses_provision_job(app) as (s3, m):
-            BcoursesProvisionSiteJob(app)._run(params)
+            assert BcoursesProvisionSiteJob(app)._run(params)
             spring_2023_enrollments_imported = read_s3_csv(app, s3, 'enrollments-TERM-2023-B')
             assert len(spring_2023_enrollments_imported) == 5
             assert spring_2023_enrollments_imported[1] == 'CRS:ANTHRO-189-2023-B,30040000,student,SEC:2023-B-32936,active,'
@@ -63,7 +63,7 @@ class TestBcoursesProvisionSiteJob:
             'updated_sis_section_ids': ['SEC:2023-B-98765'],
         }
         with setup_bcourses_provision_job(app) as (s3, m):
-            BcoursesProvisionSiteJob(app)._run(params)
+            assert BcoursesProvisionSiteJob(app)._run(params) is None
             assert_s3_key_not_found(app, s3, 'enrollments-TERM-2023-B')
 
     @mock.patch('ripley.lib.canvas_site_provisioning.get_section_enrollments')
@@ -87,7 +87,8 @@ class TestBcoursesProvisionSiteJob:
         mock_section_enrollments.return_value = section_enrollments
 
         with setup_bcourses_provision_job(app) as (s3, m):
-            BcoursesProvisionSiteJob(app)._run(params)
+            result = BcoursesProvisionSiteJob(app)._run(params)
+            assert 'SIS import result' in result
             spring_2023_enrollments_imported = read_s3_csv(app, s3, 'enrollments-TERM-2023-B')
             assert len(spring_2023_enrollments_imported) == 7
             new_enrollment = next(e for e in spring_2023_enrollments_imported if '30030000' in e)
@@ -106,7 +107,8 @@ class TestBcoursesProvisionSiteJob:
         mock_section_enrollments.return_value = section_enrollments
 
         with setup_bcourses_provision_job(app) as (s3, m):
-            BcoursesProvisionSiteJob(app)._run(params)
+            result = BcoursesProvisionSiteJob(app)._run(params)
+            assert 'SIS import result' in result
             spring_2023_enrollments_imported = read_s3_csv(app, s3, 'enrollments-TERM-2023-B')
             assert len(spring_2023_enrollments_imported) == 9
             deleted_enrollments = [row for row in spring_2023_enrollments_imported if 'SEC:2023-B-32936' in row]

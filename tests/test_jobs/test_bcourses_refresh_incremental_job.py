@@ -41,7 +41,7 @@ class TestRefreshBcoursesIncremental:
 
     def test_no_previous_export(self, app):
         with self.setup_incremental_refresh_job(app) as s3:
-            BcoursesRefreshIncrementalJob(app)._run()
+            assert BcoursesRefreshIncrementalJob(app)._run()
             spring_2023_enrollments_imported = read_s3_csv(app, s3, 'enrollments-TERM-2023-B-refresh-incremental')
             assert len(spring_2023_enrollments_imported) == 4
             assert spring_2023_enrollments_imported[0] == 'course_id,user_id,role,section_id,status,associated_user_id'
@@ -51,14 +51,14 @@ class TestRefreshBcoursesIncremental:
 
     def test_incremental_job_does_not_duplicate_full_job(self, app):
         with setup_bcourses_refresh_job(app) as (s3, m):
-            BcoursesRefreshFullJob(app)._run()
+            assert BcoursesRefreshFullJob(app)._run()
             assert read_s3_csv(app, s3, 'enrollments-TERM-2023-B-refresh-full')
             BcoursesRefreshIncrementalJob(app)._run()
             assert_s3_key_not_found(app, s3, 'enrollments-TERM-2023-B-refresh-incremental')
 
     def test_previous_export_no_change(self, app):
         with self.setup_term_enrollments_export(app) as s3:
-            BcoursesRefreshIncrementalJob(app)._run()
+            assert BcoursesRefreshIncrementalJob(app)._run() is None
             assert_s3_key_not_found(app, s3, 'enrollments-TERM-2023-B-refresh-incremental')
 
     @mock.patch('ripley.lib.canvas_site_provisioning.get_edo_enrollment_updates')
@@ -74,7 +74,7 @@ class TestRefreshBcoursesIncremental:
             })
             mock_edo_enrollment_updates.return_value = edo_enrollment_updates
 
-            BcoursesRefreshIncrementalJob(app)._run()
+            assert BcoursesRefreshIncrementalJob(app)._run()
             spring_2023_enrollments_imported = read_s3_csv(app, s3, 'enrollments-TERM-2023-B-refresh-incremental')
             assert len(spring_2023_enrollments_imported) == 2
             assert spring_2023_enrollments_imported[1] == 'CRS:ANTHRO-189-2023-B,30060000,student,SEC:2023-B-32936,active,'
@@ -84,12 +84,12 @@ class TestRefreshBcoursesIncremental:
         with self.setup_incremental_refresh_job(app) as s3:
             mock_edo_enrollment_updates.return_value = edo_enrollment_updates
             assert count_s3_csvs(app, s3, 'enrollments-TERM-2023-B-refresh-incremental') == 0
-            BcoursesRefreshIncrementalJob(app)._run()
+            assert BcoursesRefreshIncrementalJob(app)._run()
             assert count_s3_csvs(app, s3, 'enrollments-TERM-2023-B-refresh-incremental') == 1
             # Pause a moment to get a new timestamp.
             sleep(1)
             # No change, no new file.
-            BcoursesRefreshIncrementalJob(app)._run()
+            assert BcoursesRefreshIncrementalJob(app)._run() is None
             assert count_s3_csvs(app, s3, 'enrollments-TERM-2023-B-refresh-incremental') == 1
             sleep(1)
             # One new entry, one new file.
@@ -102,7 +102,7 @@ class TestRefreshBcoursesIncremental:
                 'course_career_numeric': 1,
             })
             mock_edo_enrollment_updates.return_value = edo_enrollment_updates
-            BcoursesRefreshIncrementalJob(app)._run()
+            assert BcoursesRefreshIncrementalJob(app)._run()
             assert count_s3_csvs(app, s3, 'enrollments-TERM-2023-B-refresh-incremental') == 2
             latest_spring_2023_enrollments_imported = read_s3_csv(app, s3, 'enrollments-TERM-2023-B-refresh-incremental', get_latest=True)
             assert len(latest_spring_2023_enrollments_imported) == 2
@@ -116,7 +116,7 @@ class TestRefreshBcoursesIncremental:
             edo_enrollment_updates.pop()
             mock_edo_enrollment_updates.return_value = edo_enrollment_updates
 
-            BcoursesRefreshIncrementalJob(app)._run()
+            assert BcoursesRefreshIncrementalJob(app)._run() is None
             assert_s3_key_not_found(app, s3, 'enrollments-TERM-2023-B-refresh-full')
 
     @mock.patch('ripley.lib.canvas_site_provisioning.get_edo_enrollment_updates')
@@ -137,7 +137,7 @@ class TestRefreshBcoursesIncremental:
             })
             mock_edo_instructor_updates.return_value = edo_instructor_updates
 
-            BcoursesRefreshIncrementalJob(app)._run()
+            assert BcoursesRefreshIncrementalJob(app)._run()
             spring_2023_enrollments_imported = read_s3_csv(app, s3, 'enrollments-TERM-2023-B-refresh-incremental')
             assert len(spring_2023_enrollments_imported) == 2
             assert spring_2023_enrollments_imported[1] == 'CRS:ANTHRO-189-2023-B,30020000,Lead TA,SEC:2023-B-32936,active,'

@@ -46,6 +46,7 @@ class ExportTermEnrollmentsJob(BaseJob):
         if not sis_term_ids:
             sis_term_ids = [t.to_canvas_sis_term_id() for t in BerkeleyTerm.get_current_terms().values()]
 
+        term_results = []
         for sis_term_id in sis_term_ids:
             export_file = tempfile.NamedTemporaryFile(suffix='.csv')
 
@@ -97,8 +98,11 @@ class ExportTermEnrollmentsJob(BaseJob):
                 ):
                     raise BackgroundJobError('New users import failed.')
 
+            term_results.append(f'{sis_term_id}, {enrollment_count} enrollments')
+
         CanvasSynchronization.update(term_enrollment_csvs=this_sync)
-        app.logger.info('Enrollemnts exported, job complete.')
+        app.logger.info('Enrollments exported, job complete.')
+        return 'Enrollments exported: ' + '; '.join(term_results)
 
     @classmethod
     def description(cls):

@@ -91,10 +91,11 @@ class BcoursesProvisionSiteJob(BcoursesRefreshBaseJob):
             for _csv in csv_set.all:
                 _csv.filehandle.close()
 
-            self.upload_results(csv_set, timestamp)
+            result = self.upload_results(csv_set, timestamp)
 
         CanvasSynchronization.update(enrollments=this_sync, instructors=this_sync)
         app.logger.info(f'bCourses site provisioning job (mode={self.__class__.__name__}) complete.')
+        return result
 
     @classmethod
     def _remove_section_enrollments(cls, sis_term_id, canvas_site_id, sis_course_id, deleted_section_ids, csv_set):

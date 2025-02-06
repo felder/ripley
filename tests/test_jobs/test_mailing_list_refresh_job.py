@@ -42,8 +42,8 @@ class TestMailingListRefreshJob:
                 assert mailing_list.populated_at is None
                 assert len(MailingListMembers.query.filter_by(mailing_list_id=mailing_list.id).all()) == 0
 
-            impacted_canvas_site_ids = MailingListRefreshJob(app)._run()
-            assert impacted_canvas_site_ids == [1234567, 775390]
+            result = MailingListRefreshJob(app)._run()
+            assert result == 'Updated membership for 2 mailing lists.'
             assert mailing_list.populated_at is not None
             all_members = MailingListMembers.query.filter_by(mailing_list_id=mailing_list.id).all()
             assert len(all_members) == 1
