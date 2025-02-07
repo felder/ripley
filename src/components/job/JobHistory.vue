@@ -30,11 +30,12 @@
     <v-card-text>
       <v-data-table
         :headers="headers"
-        item-value="name"
+        item-value="id"
         :items="jobHistory"
         density="compact"
         items-per-page="10"
         :search="search"
+        show-expand
       >
         <template #no-data>
           <div id="message-no-job-history" class="pa-4 text-no-wrap title">
@@ -73,6 +74,14 @@
           <div v-if="item.finishedAt" class="py-2">
             {{ $moment(item.finishedAt).format(dateFormat) }}
           </div>
+        </template>
+        <template #expanded-row="{item}">
+          <tr class="bg-secondary">
+            <td colspan="5" class="px-4 py-2">
+              <div><strong>Job result</strong></div>
+              <div>{{ item.result || 'No details.' }}</div>
+            </td>
+          </tr>
         </template>
       </v-data-table>
     </v-card-text>
