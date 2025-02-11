@@ -41,3 +41,7 @@ tmp/
 .flask_cache/
 .pytest_cache/
 setup.cfg
+
+# Teena
+geckodriver.log
+teena/downloads/*
