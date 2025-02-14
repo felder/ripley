@@ -65,6 +65,7 @@ def config_add_user():
 def config_manage_sites():
     tool_definition = lti_tool_definitions()['manage_sites']
     return tool_config(
+        default=tool_definition['default'],
         description=tool_definition['description'],
         placement=tool_definition['placement'],
         target='launch_manage_sites',
@@ -115,6 +116,7 @@ def config_mailing_list():
 def config_mailing_lists():
     tool_definition = lti_tool_definitions()['mailing_lists']
     return tool_config(
+        default=tool_definition['default'],
         description=tool_definition['description'],
         placement=tool_definition['placement'],
         target='launch_mailing_lists',
@@ -127,6 +129,7 @@ def config_mailing_lists():
 def config_provision_user():
     tool_definition = lti_tool_definitions()['provision_user']
     return tool_config(
+        default=tool_definition['default'],
         description=tool_definition['description'],
         placement=tool_definition['placement'],
         target='launch_provision_user',
@@ -139,6 +142,7 @@ def config_provision_user():
 def config_roster_photos():
     tool_definition = lti_tool_definitions()['roster_photos']
     return tool_config(
+        default=tool_definition['default'],
         description=tool_definition['description'],
         placement=tool_definition['placement'],
         target='launch_roster_photos',

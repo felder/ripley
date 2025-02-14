@@ -114,6 +114,7 @@ def lti_tool_definitions():
                 'client_id': '10720000000000624',
                 'description': 'Create and manage mailing lists for all course sites',
                 'placement': 'account_navigation',
+                'default': 'enabled',
                 'visibility': 'admins',
             },
             'manage_sites': {
@@ -122,6 +123,7 @@ def lti_tool_definitions():
                 'client_id': '10720000000000625',
                 'description': 'Create or update bCourses sites',
                 'placement': 'user_navigation',
+                'default': 'enabled',
                 'visibility': 'public',
             },
             'provision_user': {
@@ -130,6 +132,7 @@ def lti_tool_definitions():
                 'client_id': '10720000000000627',
                 'description': 'Automated user provisioning',
                 'placement': 'account_navigation',
+                'default': 'enabled',
                 'visibility': 'admins',
             },
             'roster_photos': {
@@ -138,6 +141,7 @@ def lti_tool_definitions():
                 'client_id': '10720000000000628',
                 'description': 'Browse and search official roster photos',
                 'placement': 'course_navigation',
+                'default': 'enabled',
                 'visibility': 'admins',
             },
         }
