@@ -23,4 +23,17 @@ SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED
 ENHANCEMENTS, OR MODIFICATIONS.
 """
 
-# Teena Marie
+
+class CanvasSiteRoles(object):
+
+    ROLES = ['Designer',
+             'Lead TA',
+             'Maintainer',
+             'Member',
+             'Observer',
+             'Owner',
+             'Reader',
+             'Student',
+             'TA',
+             'Teacher',
+             'Waitlist Student']

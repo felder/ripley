@@ -1,5 +1,5 @@
 """
-Copyright ©2024. The Regents of the University of California (Regents). All Rights Reserved.
+Copyright ©2025. The Regents of the University of California (Regents). All Rights Reserved.
 
 Permission to use, copy, modify, and distribute this software and its documentation
 for educational, research, and not-for-profit purposes, without fee and without a
@@ -28,6 +28,7 @@ import os
 import pytest
 from ripley.factory import create_app
 from teena.pages.cal_net_page import CalNetPage
+from teena.pages.canvas.canvas_page import CanvasPage
 from teena.test_utils.webdriver_manager import WebDriverManager
 
 
@@ -53,6 +54,7 @@ def page_objects(request):
     # Define page objects
 
     cal_net_page = CalNetPage(driver, headless)
+    canvas_page = CanvasPage(driver, headless)
 
     session = request.node
     try:
@@ -60,6 +62,7 @@ def page_objects(request):
             cls = item.getparent(pytest.Class)
             setattr(cls.obj, 'driver', driver)
             setattr(cls.obj, 'cal_net_page', cal_net_page)
+            setattr(cls.obj, 'canvas_page', canvas_page)
         yield
     finally:
         WebDriverManager.quit_browser(driver)

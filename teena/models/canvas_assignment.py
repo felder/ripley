@@ -23,4 +23,10 @@ SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED
 ENHANCEMENTS, OR MODIFICATIONS.
 """
 
-# Teena Marie
+
+class CanvasAssignment(object):
+
+    def __init__(self, title, assignment_id=None, url=None):
+        self.title = title
+        self.assignment_id = assignment_id
+        self.url = url

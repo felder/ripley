@@ -35,4 +35,5 @@ tox==4.17.1
 
 # For Teena
 
+polling2==0.5.0
 selenium==4.27.0

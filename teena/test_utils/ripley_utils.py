@@ -23,4 +23,8 @@ SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED
 ENHANCEMENTS, OR MODIFICATIONS.
 """
 
-# Teena Marie
+from flask import current_app as app
+
+
+def ripley_base_url():
+    return app.config['BASE_URL']
