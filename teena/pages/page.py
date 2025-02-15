@@ -277,6 +277,16 @@ class Page(object):
 
     # NAVIGATION AND KEYSTROKES
 
+    def current_url(self):
+        return self.driver.current_url
+
+    def navigate_to(self, url):
+        app.logger.info(f'Navigating to {url}')
+        self.driver.get(url)
+
+    def when_url_contains(self, string):
+        Wait(self.driver, utils.get_medium_timeout()).until(ec.url_contains(string))
+
     def reload_page(self):
         self.driver.refresh()
 
@@ -289,6 +299,12 @@ class Page(object):
     def scroll_to_element(self, element):
         self.driver.execute_script('arguments[0].scrollIntoView(true);', element)
         time.sleep(0.5)
+
+    def arrow_down(self):
+        ActionChains(self.driver).send_keys(Keys.ARROW_DOWN).perform()
+
+    def arrow_up(self):
+        ActionChains(self.driver).send_keys(Keys.ARROW_UP).perform()
 
     def hit_backspace(self):
         ActionChains(self.driver).send_keys(Keys.BACKSPACE).perform()
@@ -306,7 +322,16 @@ class Page(object):
         ActionChains(self.driver).send_keys(Keys.TAB).perform()
         time.sleep(0.5)
 
+    def mouseover(self, locator, xoffset=None, yoffset=None):
+        self.scroll_to_element(locator)
+        ActionChains(self.driver).move_to_element_with_offset(self.element(locator), (xoffset or 0), yoffset or 0)
+        time.sleep(utils.get_click_sleep())
+
     # WINDOW MGMT
+
+    def accept_alert(self):
+        alert = self.driver.switch_to.alert
+        alert.accept()
 
     def window_handles(self):
         return self.driver.window_handles
@@ -347,7 +372,7 @@ class Page(object):
         self.when_present((By.ID, frame_id), utils.get_short_timeout())
         self.driver.switch_to.frame(frame_id)
 
-    def switch_to_main_content(self):
+    def switch_to_default_content(self):
         self.driver.switch_to.default_content()
 
     def switch_to_canvas_iframe(self, url=None):

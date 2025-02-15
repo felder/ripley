@@ -30,10 +30,14 @@ ADMIN_UID = '123456'
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 BASE_URL = 'https://ripley-qa.ets.berkeley.edu'
+BASE_URL_PROD = 'https://the.prod.url.edu'
 
 BROWSER = 'chrome'
 BROWSER_BINARY_PATH = '/path/to/chrome'
 BROWSER_HEADLESS = False
+
+CANVAS_BASE_URL = 'https://ucberkeley.test.instructure.com'
+CANVAS_QA_ACCOUNT_ID = 123456
 
 CLICK_SLEEP = 0.5
 

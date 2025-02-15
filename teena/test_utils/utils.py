@@ -23,8 +23,6 @@ SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED
 ENHANCEMENTS, OR MODIFICATIONS.
 """
 
-import csv
-import glob
 import os
 import shutil
 import time
@@ -62,6 +60,36 @@ def get_medium_timeout():
 
 def get_long_timeout():
     return app.config['TIMEOUT_LONG']
+
+
+# Accounts
+
+def ripley_base_url():
+    return app.config['BASE_URL']
+
+
+def ripley_prod_base_url():
+    return app.config['BASE_URL_PROD']
+
+
+def canvas_base_url():
+    return app.config['CANVAS_BASE_URL']
+
+
+def canvas_root_acct():
+    return app.config['CANVAS_BERKELEY_ACCOUNT_ID']
+
+
+def canvas_admin_acct():
+    return app.config['CANVAS_ADMIN_TOOLS_ACCOUNT_ID']
+
+
+def canvas_official_courses_acct():
+    return app.config['CANVAS_COURSES_ACCOUNT_ID']
+
+
+def canvas_qa_acct():
+    return app.config['CANVAS_QA_ACCOUNT_ID']
 
 
 # Users
